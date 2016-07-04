@@ -53,11 +53,14 @@ def main():
       # eg.: c:\symbols\chrome.dll.pdb\A982846B8C61458C9C4C3E33C6FA8F511
       inner_symbol_dirs = []
       for inner_symbol_dir in os.listdir(outer_symbol_path):
-        inner_symbol_dirs.append((os.path.getmtime(os.path.join(outer_symbol_path, inner_symbol_dir)), inner_symbol_dir))
+        mtime = os.path.getmtime(os.path.join(outer_symbol_path, inner_symbol_dir))
+        inner_symbol_dirs.append((mtime, inner_symbol_dir))
       # Sort by date
       inner_symbol_dirs.sort()
       # Iterate over all but the most recent entries
-      for x in inner_symbol_dirs[:-1]:
+      # Retain the last two because there may be 32-bit/64-bit binaries with the
+      # same name but different symbols, or development/stable versions.
+      for x in inner_symbol_dirs[:-2]:
         inner_symbol_path = os.path.join(outer_symbol_path, x[1])
         files = os.listdir(inner_symbol_path)
         # If there are extra files or if the file name doesn't match the parent
