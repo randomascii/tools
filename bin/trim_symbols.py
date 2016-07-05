@@ -65,7 +65,7 @@ def main():
         files = os.listdir(inner_symbol_path)
         # If there are extra files or if the file name doesn't match the parent
         # directory then maybe this isn't a symbol cache?
-        if len(files) == 1 and files[0] == symbol:
+        if len(files) == 1 and files[0].lower() == symbol.lower():
           file_path = os.path.join(inner_symbol_path, files[0])
           print 'removing %s' % file_path
           deleted_size += os.path.getsize(file_path)
