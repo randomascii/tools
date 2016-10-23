@@ -67,6 +67,22 @@ static BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
 			// flag regardless of who owns the window.
 			//if (processName == L"ipoint.exe" || processName == L"iexplore.exe" || processName == L"sidebar.exe")
 			{
+				// Windows 10 appears to have a bug, or a bad interaction, with
+				// Outlook 2010. The Outlook reminders window keeps ending up
+				// with the always-on-top flag set, which is really annoying.
+				// For a while the only 'fix' was to restart Outlook, but this
+				// code will detect-and-correct. If I have AltTabFixContinuous
+				// running then Outlook gets fixed-as-needed every time that I
+				// hit the tab key, which means that I rarely see the bug.
+				// Yay for ugly hacks to work around Microsoft's bugs?
+				if (processName == L"OUTLOOK.EXE")
+				{
+					printf("        Clearing always-on-top flag.\n");
+					// Have to use SetWindowPos to clear WS_EX_TOPMOST
+					// https://msdn.microsoft.com/en-us/library/windows/desktop/ms633545.aspx
+					SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+					++clearedCount;
+				}
 				// The problematic windows are, so far, always located at 0,0 and have zero size.
 				if (rect.left == 0 && rect.top == 0 && rect.right == 0 && rect.bottom == 0)
 				{
