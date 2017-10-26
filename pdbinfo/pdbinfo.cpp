@@ -9,6 +9,7 @@
 #include <tchar.h>
 #include <atlbase.h>
 #include "dia2.h"
+#include "diacreate.h"
 
 #pragma comment(lib, "diaguids.lib")
 
@@ -40,9 +41,13 @@ bool DumpAgeAndSignature(_TCHAR* sFile)
 {
     CComPtr<IDiaDataSource> pSource;
     if (FAILED(CoCreateInstance(CLSID_DiaSource, NULL, CLSCTX_INPROC_SERVER, __uuidof( IDiaDataSource ), (void **) &pSource)))
-    {   
-        printf("Could not CoCreate CLSID_DiaSource. Please register msdia140.dll or other msdia version.\n");
+    {
+      // This will load msdia140.dll by name, if it is in the same directory.
+      if (FAILED(NoRegCoCreate(L"msdia140.dll", _uuidof( DiaSourceAlt ), _uuidof( IDiaDataSource ), (void **) &pSource)))
+      {
+        printf("Could not CoCreate CLSID_DiaSource. Please register msdia140.dll or other msdia version, or put msdia140.dll in the exe's directory.\n");
         return false;
+      }
     }
 
     CComBSTR sPdbFile(sFile);
@@ -54,7 +59,7 @@ bool DumpAgeAndSignature(_TCHAR* sFile)
     }
 
     CComPtr<IDiaSession> pSession;
-    if (FAILED(pSource->openSession(&pSession))) 
+    if (FAILED(pSource->openSession(&pSession)))
     {
         printf("openSession failed.\n");
         return false;
