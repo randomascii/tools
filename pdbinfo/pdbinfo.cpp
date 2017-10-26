@@ -42,11 +42,16 @@ bool DumpAgeAndSignature(_TCHAR* sFile)
     CComPtr<IDiaDataSource> pSource;
     if (FAILED(CoCreateInstance(CLSID_DiaSource, NULL, CLSCTX_INPROC_SERVER, __uuidof( IDiaDataSource ), (void **) &pSource)))
     {
-      // This will load msdia140.dll by name, if it is in the same directory.
+      // This will load msdia140.dll by name, if a copy with matching bitness is in the path.
       if (FAILED(NoRegCoCreate(L"msdia140.dll", _uuidof( DiaSourceAlt ), _uuidof( IDiaDataSource ), (void **) &pSource)))
       {
-        printf("Could not CoCreate CLSID_DiaSource. Please register msdia140.dll or other msdia version, or put msdia140.dll in the exe's directory.\n");
+        printf("Could not CoCreate CLSID_DiaSource. Please register msdia140.dll or other msdia version"
+               ", or put a %d-bit copy of msdia140.dll in the path.\n", sizeof(void*) * 8);
         return false;
+      }
+      else
+      {
+        printf("Could not CoCreate CLSID_DiaSource but msdia140.dll was found in the path.\n");
       }
     }
 
