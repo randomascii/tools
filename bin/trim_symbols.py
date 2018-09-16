@@ -75,7 +75,8 @@ def main():
           os.rmdir(inner_symbol_path)
         else:
           print 'Leaving %s, just in case.' % inner_symbol_path
-  print 'Deleted %d files totaling %d bytes' % (deleted_count, deleted_size)
+  # GB = 1e9. GiB = 2^30 and is dumb in this context.
+  print 'Deleted %d files totaling %1.3f GB' % (deleted_count, deleted_size / 1e9)
 
 
 if __name__ == '__main__':
