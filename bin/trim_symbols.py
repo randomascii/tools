@@ -45,6 +45,7 @@ def main():
 
   deleted_count = 0
   deleted_size = 0
+  failed_count = 0
   for symbol in os.listdir(symbol_cache_dir):
     ext = os.path.splitext(symbol)[1]
     if ext.lower() in ['.pdb', '.exe', 'dll']:
@@ -60,23 +61,31 @@ def main():
       # Iterate over all but the most recent entries
       # Retain the last two because there may be 32-bit/64-bit binaries with the
       # same name but different symbols, or development/stable versions.
-      for x in inner_symbol_dirs[:-2]:
-        inner_symbol_path = os.path.join(outer_symbol_path, x[1])
+      for guid_path in inner_symbol_dirs[:-2]:
+        inner_symbol_path = os.path.join(outer_symbol_path, guid_path[1])
         files = os.listdir(inner_symbol_path)
+        file_path = os.path.join(inner_symbol_path, files[0])
         # If there are extra files or if the file name doesn't match the parent
-        # directory then maybe this isn't a symbol cache?
-        if len(files) == 1 and files[0].lower() == symbol.lower():
-          file_path = os.path.join(inner_symbol_path, files[0])
+        # directory then maybe this isn't a symbol cache. Files that end with
+        # .error are sometimes present due to symbol-server download errors.
+        if len(files) == 1 and files[0].lower() == symbol.lower() or files[0].endswith('.error'):
           print 'removing %s' % file_path
-          deleted_size += os.path.getsize(file_path)
-          deleted_count += 1
-          os.remove(file_path)
-          print 'removing %s' % inner_symbol_path
-          os.rmdir(inner_symbol_path)
+          try:
+            file_size = os.path.getsize(file_path)
+            os.remove(file_path)
+            print 'removing %s' % inner_symbol_path
+            os.rmdir(inner_symbol_path)
+            deleted_size += file_size
+            deleted_count += 1
+          except WindowsError as e:
+            print 'Failure deleting %s - %s' % (file_path, e)
+            failed_count += 1
         else:
-          print 'Leaving %s, just in case.' % inner_symbol_path
+          print 'File/directory mismatch. Leaving %s, just in case.' % file_path
   # GB = 1e9. GiB = 2^30 and is dumb in this context.
   print 'Deleted %d files totaling %1.3f GB' % (deleted_count, deleted_size / 1e9)
+  if failed_count > 1:
+    print 'Failed to delete %d file(s)' % failed_count
 
 
 if __name__ == '__main__':
