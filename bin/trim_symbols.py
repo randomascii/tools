@@ -64,11 +64,29 @@ def main():
       for guid_path in inner_symbol_dirs[:-2]:
         inner_symbol_path = os.path.join(outer_symbol_path, guid_path[1])
         files = os.listdir(inner_symbol_path)
-        file_path = os.path.join(inner_symbol_path, files[0])
+        deleted_error_files = False
+        for file in files:
+          # Files that end with.error are sometimes present due to symbol-server
+          # download errors. Delete them.
+          if file.endswith('.error'):
+            file_path = os.path.join(inner_symbol_path, file)
+            print 'removing %s' % file_path
+            try:
+              file_size = os.path.getsize(file_path)
+              os.remove(file_path)
+              deleted_size += file_size
+              deleted_count += 1
+            except WindowsError as e:
+              print 'Failure deleting %s - %s' % (file_path, e)
+              failed_count += 1
+            deleted_error_files = True
+        # If we deleted some .error files then rescan.
+        if deleted_error_files:
+          files = os.listdir(inner_symbol_path)
         # If there are extra files or if the file name doesn't match the parent
-        # directory then maybe this isn't a symbol cache. Files that end with
-        # .error are sometimes present due to symbol-server download errors.
-        if len(files) == 1 and files[0].lower() == symbol.lower() or files[0].endswith('.error'):
+        # directory then maybe this isn't a symbol cache.
+        if len(files) == 1 and files[0].lower() == symbol.lower():
+          file_path = os.path.join(inner_symbol_path, files[0])
           print 'removing %s' % file_path
           try:
             file_size = os.path.getsize(file_path)
