@@ -67,8 +67,10 @@ def main():
         deleted_error_files = False
         for file in files:
           # Files that end with.error are sometimes present due to symbol-server
-          # download errors. Delete them.
-          if file.endswith('.error'):
+          # download errors. Delete them. Files that end with '_' are compressed
+          # files that can't be used directly and are not supposed to be
+          # retained. Delete them.
+          if file.endswith('.error') or file.endswith('_'):
             file_path = os.path.join(inner_symbol_path, file)
             print 'removing %s' % file_path
             try:
@@ -98,8 +100,15 @@ def main():
           except WindowsError as e:
             print 'Failure deleting %s - %s' % (file_path, e)
             failed_count += 1
+        elif len(files) == 0:
+          try:
+            print 'removing %s' % inner_symbol_path
+            os.rmdir(inner_symbol_path)
+          except WindowsError as e:
+            print 'Failure deleting %s - %s' % (inner_symbol_path, e)
+            failed_count += 1
         else:
-          print 'File/directory mismatch. Leaving %s, just in case.' % file_path
+          print 'File/directory mismatch. Leaving %s, just in case.' % inner_symbol_path
   # GB = 1e9. GiB = 2^30 and is dumb in this context.
   print 'Deleted %d files totaling %1.3f GB' % (deleted_count, deleted_size / 1e9)
   if failed_count > 1:
