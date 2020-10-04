@@ -41,7 +41,7 @@ def main():
   missed_count = 0
   for line in data.splitlines():
     try:
-      val = float(line.replace(',', ''))
+      val = float(line.replace(',', '').replace('%', ''))
       count += 1
       sum += val
       if val < min:
