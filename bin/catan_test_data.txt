@@ -1,0 +1,82 @@
+
+
+List of Commands: /help
+Info/Help at our Discord
+Karma System: Inactive. Leavers will not receive a karma penalty
+GuestFodor turn to place settlement
+GuestFodor placed a settlement
+GuestFodor turn to place road
+GuestFodor placed a road
+GuestIcken turn to place settlement
+GuestIcken placed a settlement
+GuestIcken turn to place road
+GuestIcken placed a road
+GuestWenona turn to place settlement
+GuestWenona placed a settlement
+GuestWenona turn to place road
+GuestWenona placed a road
+GuestWenona turn to place settlement
+GuestWenona placed a settlement
+GuestWenona turn to place road
+GuestWenona placed a road
+GuestIcken turn to place settlement
+GuestIcken placed a settlement
+GuestIcken turn to place road
+GuestIcken placed a road
+GuestFodor turn to place settlement
+GuestFodor placed a settlement
+GuestFodor turn to place road
+GuestFodor placed a road
+Giving out starting resources
+GuestFodor got: wool
+GuestWenona got: brick lumber lumber
+GuestIcken got: lumber grain ore
+GuestFodor rolled: dice_2 dice_2
+GuestIcken got: ore
+GuestIcken rolled: dice_4 dice_6
+GuestFodor got: grain
+GuestWenona got: brick brick
+GuestIcken got: grain
+GuestIcken wants to give: lumber for: wool
+GuestIcken traded: lumberfor: wool with: Fodor
+GuestWenona rolled: dice_5 dice_1
+GuestIcken got: lumber brick
+GuestWenona built a road
+GuestFodor rolled: dice_2 dice_6
+GuestFodor got: wool wool
+GuestWenona got: lumber
+GuestFodor wants to give: wool for: brick
+GuestFodor traded: woolfor: brick with: Wenona
+GuestFodor built a road
+GuestIcken rolled: dice_2 dice_1
+GuestIcken got: grain
+GuestIcken built a road
+GuestIcken wants to give: grain for: lumber
+GuestWenona rolled: dice_1 dice_4
+GuestFodor got: wool
+GuestWenona got: ore
+GuestWenona wants to give: lumber for: grain
+GuestFodor rolled: dice_2 dice_3
+GuestFodor got: wool
+GuestWenona got: ore
+GuestIcken rolled: dice_3 dice_1
+GuestIcken got: ore
+GuestIcken built a city
+GuestWenona rolled: dice_3 dice_1
+GuestIcken got: ore
+GuestWenona wants to give: lumber for: grain
+GuestFodor rolled: dice_3 dice_2
+GuestFodor got: wool
+GuestWenona got: ore
+GuestIcken rolled: dice_1 dice_4
+GuestFodor got: wool
+GuestWenona got: ore
+GuestWenona rolled: dice_4 dice_6
+GuestFodor got: grain
+GuestWenona got: brick brick
+GuestIcken got: grain grain
+GuestWenona gave bank: ore ore ore ore and took grain
+GuestWenona built a settlement
+GuestWenona built a road
+Say Hello
+
