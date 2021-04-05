@@ -30,7 +30,10 @@ limitations under the License.
 // Don't leave NotepadLog statements in your shipping binaries or else unwitting
 // users will find notepad filled with your debug statements.
 
-static void NotepadLog(char * str, ...)
+// Note that using the 'A' versions of FindWindow(Ex) is important to make this
+// compile when built for unicode. Using SendMessageA is important to ensure
+// that the message is interpreted correctly by notepad as ASCII.
+static void NotepadLog(const char * str, ...)
 {
   va_list ap;
   va_start(ap, str);
@@ -40,11 +43,11 @@ static void NotepadLog(char * str, ...)
   va_end(ap);
 
   strncat_s(buf, _countof(buf), "\r\n", _TRUNCATE);
-  HWND notepad = FindWindow(NULL, "Untitled - Notepad");
+  HWND notepad = FindWindowA(NULL, "Untitled - Notepad");
   if (!notepad)
-    notepad = FindWindow(NULL, "*Untitled - Notepad");
-  HWND edit = FindWindowEx(notepad, nullptr, "EDIT", nullptr);
-  SendMessage(edit, EM_REPLACESEL, TRUE, (LPARAM)buf);
+    notepad = FindWindowA(NULL, "*Untitled - Notepad");
+  HWND edit = FindWindowExA(notepad, nullptr, "EDIT", nullptr);
+  SendMessageA(edit, EM_REPLACESEL, TRUE, (LPARAM)buf);
 }
 
 // Test code, prints whatever is in the first argument.
