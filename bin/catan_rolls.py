@@ -19,7 +19,13 @@ fromclip.exe (not yet released) to pipe the clipboard data to this Python
 script.
 """
 
+from __future__ import print_function
+
 import fileinput
+
+# Zero-based is for C/C++, one-based is for Fortran, but two-based is for dice
+# games. Subtract two when storing data, add two when retrieving it.
+histograms = [0] * 11
 
 for line in fileinput.input():
   if line.count("rolled") > 0:
@@ -29,3 +35,9 @@ for line in fileinput.input():
     person = person.split('#')[0]
     roll = ord(dice1[-1]) - ord('0') + ord(dice2[-1]) - ord('0')
     print('%2d rolled by %s' % (roll, person))
+    histograms[roll-2] += 1
+
+print()
+print('Rolls histogram:')
+for i in range(len(histograms)):
+  print('%2d %s' % (i + 2, 'x' * histograms[i]))
