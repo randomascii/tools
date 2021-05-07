@@ -46,7 +46,7 @@ bool DumpAgeAndSignature(_TCHAR* sFile)
       if (FAILED(NoRegCoCreate(L"msdia140.dll", _uuidof( DiaSourceAlt ), _uuidof( IDiaDataSource ), (void **) &pSource)))
       {
         printf("Could not CoCreate CLSID_DiaSource. Please register msdia140.dll or other msdia version"
-               ", or put a %d-bit copy of msdia140.dll in the path.\n", sizeof(void*) * 8);
+               ", or put a %zd-bit copy of msdia140.dll in the path.\n", sizeof(void*) * 8);
         return false;
       }
       else
