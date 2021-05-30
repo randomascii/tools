@@ -34,6 +34,7 @@ pops up.
 """
 
 import ctypes
+import datetime
 import os
 # To make this available you need to install Pillow with this command:
 # pip3 install pillow
@@ -41,6 +42,18 @@ from PIL import Image, ExifTags
 import random
 import sys
 import time
+
+# Use the documents directory or localappdata (shadow version) to store the
+# database of files and their attributes, and other status files.
+
+# This is not, apparently, a completely robust way to get the user's documents
+# directory, but the alternatives are much messier and not worth it to me.
+database_dir = os.path.expanduser(r'~\Documents')
+
+# Note that Python reads/writes from a shadow version of localappdata due to
+# managed app restrictions, which makes the database and the recent files
+# difficult to view.
+#database_dir = os.environ['localappdata']
 
 def GetPictures(directories):
   """
@@ -58,17 +71,6 @@ def GetPictures(directories):
 def main():
   verbose = True
   start = time.time()
-  # Use the documents directory or localappdata (shadow version) to store the
-  # database of files and their attributes.
-
-  # This is not, apparently, a completely robust way to get the user's documents
-  # directory, but the alternatives are much messier and not worth it to me.
-  database_dir = os.path.expanduser(r'~\Documents')
-
-  # Note that Python reads/writes from a shadow version of localappdata due to
-  # managed app restrictions, which makes the database and the recent files
-  # difficult to view.
-  #database_dir = os.environ['localappdata']
   database = os.path.join(database_dir, 'WallpaperPhotoDatabase.txt')
   try:
     lines = open(database, 'rb').read().decode('utf-16').splitlines()
@@ -165,4 +167,11 @@ def main():
 
 
 if __name__ == '__main__':
+  try:
     sys.exit(main())
+  except Exception as e:
+    with open(os.path.join(database_dir, 'WallpaperError.txt'), 'a') as f:
+      date_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+      message = 'Exception caught at %s: %s\n' % (date_time, e)
+      f.write(message)
+      print(message)
