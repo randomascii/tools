@@ -127,7 +127,7 @@ def main():
       print('Writing updated database.')
       output_list = []
       for key, value in new_database.items():
-        output_list.append('%s\t%.7f\t%d' % (key, value[0], value[1]))
+        output_list.append('%s\t%f\t%d' % (key, value[0], value[1]))
       output_string = '\n'.join(output_list)
       with open(database, 'wb') as f:
         f.write(output_string.encode('utf-16'))
@@ -160,7 +160,7 @@ def main():
   # Record information about the displayed photo.
   history = os.path.join(database_dir, 'WallpaperPhotoHistory.txt')
   with open(history, 'a') as f:
-    f.write('%s\t%.7f\t%d\n' % (path, new_database[path][0], new_database[path][1]))
+    f.write('%s\t%f\t%d\n' % (path, new_database[path][0], new_database[path][1]))
   elapsed = time.time() - start
   if verbose:
     print('%f s to do work.' % elapsed)
