@@ -83,6 +83,8 @@ def main():
 
   mypictures = os.path.expanduser(r'~\Pictures')
   publicpictures = os.path.normpath(os.path.expanduser(r'~\..\public\Pictures'))
+  # Set this to the list of directories to be scanned.
+  directories = [mypictures, publicpictures]
 
   # Scanning the entire picture directory is fast if it is cached, and gives a
   # quite reliable way to detect when new pictures appear. But it is not free,
@@ -90,7 +92,7 @@ def main():
   # whenever the file count changes.
   detect_changes = True
   if detect_changes:
-    picture_list = GetPictures([mypictures, publicpictures])
+    picture_list = GetPictures(directories)
 
   # Recreate the database if it doesn't exist, and every now and then.
   if not old_database or (detect_changes and len(picture_list) != len(old_database)):
@@ -98,7 +100,7 @@ def main():
       print('Updating database from %d to %d pictures.' % (len(old_database), len(picture_list)))
 
     if not detect_changes:
-      picture_list = GetPictures([mypictures, publicpictures])
+      picture_list = GetPictures(directories)
     # Set a larger decompression bomb level. Could set this to None to disable
     # compression bomb warnings entirely.
     Image.MAX_IMAGE_PIXELS = 300000000
@@ -154,7 +156,7 @@ def main():
     break
 
   # Record information about the displayed photo.
-  history = os.path.join(database_dir, 'PhotoWallpaperHistory.txt')
+  history = os.path.join(database_dir, 'WallpaperPhotoHistory.txt')
   with open(history, 'a') as f:
     f.write('%s\t%.7f\t%d\n' % (path, new_database[path][0], new_database[path][1]))
   elapsed = time.time() - start
