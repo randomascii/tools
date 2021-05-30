@@ -111,18 +111,22 @@ def main():
 
     new_database = {}
     count = 0
+    updated = 0
     for path in picture_list:
       count += 1
-      if int(count % 1000) == 0:
+      if int(count % 5000) == 0:
         print('%d out of %d, %s.' % (count, len(picture_list), path))
       mtime = os.path.getmtime(path)
       if path in old_database and old_database[path][0] == mtime:
         new_database[path] = old_database[path]
       else:
+        updated += 1
         with Image.open(path) as img:
           img_exif = img.getexif()
           rating = img_exif.get(rating_tag, 0)
         new_database[path] = (mtime, rating)
+    if updated > 0:
+      print('Updated %d entries.' % updated)
     if new_database != old_database:
       print('Writing updated database.')
       output_list = []
