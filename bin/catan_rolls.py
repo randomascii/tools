@@ -30,10 +30,12 @@ histograms = [0] * 11
 for line in fileinput.input():
   if line.count("rolled") > 0:
     person, rolled, dice1, dice2 = line.split()
+    # Strip off the noisy 'Guest' prefix for cleaner output.
     if person.startswith('Guest'):
       person = person[len('Guest'):]
+    # Strip off the #nnnn suffix for cleaner output.
     person = person.split('#')[0]
-    roll = ord(dice1[-1]) - ord('0') + ord(dice2[-1]) - ord('0')
+    roll = int(dice1[-1]) + int(dice2[-1])
     print('%2d rolled by %s' % (roll, person))
     histograms[roll-2] += 1
 
