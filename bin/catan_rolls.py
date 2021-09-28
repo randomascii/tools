@@ -27,6 +27,8 @@ import fileinput
 # games. Subtract two when storing data, add two when retrieving it.
 histograms = [0] * 11
 
+sevens = {}
+
 for line in fileinput.input():
   if line.count("rolled") > 0:
     person, rolled, dice1, dice2 = line.split()
@@ -38,8 +40,14 @@ for line in fileinput.input():
     roll = int(dice1[-1]) + int(dice2[-1])
     print('%2d rolled by %s' % (roll, person))
     histograms[roll-2] += 1
+    if roll == 7:
+      sevens[person] = sevens.get(person, 0) + 1
 
 print()
 print('Rolls histogram:')
 for i in range(len(histograms)):
   print('%2d %s' % (i + 2, 'x' * histograms[i]))
+
+print('')
+for name in sevens.keys():
+  print('%2d sevens rolled by %s' % (sevens[name], name))
