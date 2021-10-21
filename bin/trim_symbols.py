@@ -31,6 +31,8 @@ files if the file names match the grandparent directory, and if there is just
 one file in the directory.
 """
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -40,7 +42,7 @@ def main():
     symbol_cache_dir = sys.argv[1]
 
   if not os.path.isdir(symbol_cache_dir):
-    print '"%s" is not a directory.' % symbol_cache_dir
+    print('"%s" is not a directory.' % symbol_cache_dir)
     return 1
 
   deleted_count = 0
@@ -66,20 +68,20 @@ def main():
         files = os.listdir(inner_symbol_path)
         deleted_error_files = False
         for file in files:
-          # Files that end with.error are sometimes present due to symbol-server
+          # Files that end with .error are sometimes present due to symbol-server
           # download errors. Delete them. Files that end with '_' are compressed
           # files that can't be used directly and are not supposed to be
           # retained. Delete them.
           if file.endswith('.error') or file.endswith('_'):
             file_path = os.path.join(inner_symbol_path, file)
-            print 'removing %s' % file_path
+            print('removing %s' % file_path)
             try:
               file_size = os.path.getsize(file_path)
               os.remove(file_path)
               deleted_size += file_size
               deleted_count += 1
             except WindowsError as e:
-              print 'Failure deleting %s - %s' % (file_path, e)
+              print('Failure deleting %s - %s' % (file_path, e))
               failed_count += 1
             deleted_error_files = True
         # If we deleted some .error files then rescan.
@@ -89,30 +91,30 @@ def main():
         # directory then maybe this isn't a symbol cache.
         if len(files) == 1 and files[0].lower() == symbol.lower():
           file_path = os.path.join(inner_symbol_path, files[0])
-          print 'removing %s' % file_path
+          print('removing %s' % file_path)
           try:
             file_size = os.path.getsize(file_path)
             os.remove(file_path)
-            print 'removing %s' % inner_symbol_path
+            print('removing %s' % inner_symbol_path)
             os.rmdir(inner_symbol_path)
             deleted_size += file_size
             deleted_count += 1
           except WindowsError as e:
-            print 'Failure deleting %s - %s' % (file_path, e)
+            print('Failure deleting %s - %s' % (file_path, e))
             failed_count += 1
         elif len(files) == 0:
           try:
-            print 'removing %s' % inner_symbol_path
+            print('removing %s' % inner_symbol_path)
             os.rmdir(inner_symbol_path)
           except WindowsError as e:
-            print 'Failure deleting %s - %s' % (inner_symbol_path, e)
+            print('Failure deleting %s - %s' % (inner_symbol_path, e))
             failed_count += 1
         else:
-          print 'File/directory mismatch. Leaving %s, just in case.' % inner_symbol_path
+          print('File/directory mismatch. Leaving %s, just in case.' % inner_symbol_path)
   # GB = 1e9. GiB = 2^30 and is dumb in this context.
-  print 'Deleted %d files totaling %1.3f GB' % (deleted_count, deleted_size / 1e9)
+  print('Deleted %d files totaling %1.3f GB' % (deleted_count, deleted_size / 1e9))
   if failed_count > 1:
-    print 'Failed to delete %d file(s)' % failed_count
+    print('Failed to delete %d file(s)' % failed_count)
 
 
 if __name__ == '__main__':
