@@ -50,7 +50,7 @@ def main():
   failed_count = 0
   for symbol in os.listdir(symbol_cache_dir):
     ext = os.path.splitext(symbol)[1]
-    if ext.lower() in ['.pdb', '.exe', 'dll']:
+    if ext.lower() in ['.pdb', '.exe', '.dll', '.drv']:
       # eg.: c:\symbols\chrome.dll.pdb
       outer_symbol_path = os.path.join(symbol_cache_dir, symbol)
       # eg.: c:\symbols\chrome.dll.pdb\A982846B8C61458C9C4C3E33C6FA8F511
