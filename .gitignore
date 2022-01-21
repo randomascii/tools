@@ -17,7 +17,7 @@ symsrv.yes
 
 # VS 2015 drops these
 *.VC.opendb
-/.vs/
+.vs/
 
 Debug/
 Release/
