@@ -33,6 +33,7 @@ context it is important to run it using pythonw.exe so that no console window
 pops up.
 """
 
+import argparse
 import ctypes
 import datetime
 import os
@@ -40,22 +41,20 @@ import os
 # pip3 install pillow
 from PIL import Image, ExifTags
 import random
-import sys
 import time
 
-# Use the documents directory or localappdata (shadow version) to store the
-# database of files and their attributes, and other status files.
+# Uses the documents directory to store the database of files and their
+# attributes, and other status information.
 
 # This is not, apparently, a completely robust way to get the user's documents
 # directory, but the alternatives are much messier and not worth it to me.
-database_dir = os.path.expanduser(r'~\Documents')
-
-# Note that Python reads/writes from a shadow version of localappdata due to
+# In particular, os.environ['localappdata'] doesn't work because the store
+# version of Python reads/writes from a shadow version of localappdata due to
 # managed app restrictions, which makes the database and the recent files
 # difficult to view.
-#database_dir = os.environ['localappdata']
+database_dir = os.path.expanduser(r'~\Documents')
 
-def GetPictures(directories):
+def GetPicturePaths(directories):
   """
   Scan the specified directories for .jpg files and return a list of file paths.
   """
@@ -69,11 +68,18 @@ def GetPictures(directories):
   return result
 
 def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--showall', help='If specified then show all pictures '
+                      'instead of just five-star images',
+                      action='store_true')
+  args = parser.parse_args()
+
   verbose = True
-  start = time.time()
-  database = os.path.join(database_dir, 'WallpaperPhotoDatabase.txt')
+  database_path = os.path.join(database_dir, 'WallpaperPhotoDatabase.txt')
   try:
-    lines = open(database, 'rb').read().decode('utf-16').splitlines()
+    # 'utf-16' is not a sensible choice. I think I chose it because C# defaults
+    # to that encoding and I have some image processing tools written in C#.
+    lines = open(database_path, 'rb').read().decode('utf-16').splitlines()
   except:
     # If the database doesn't exist then create an empty one.
     lines = []
@@ -89,20 +95,20 @@ def main():
   directories = [mypictures, publicpictures]
 
   # Scanning the entire picture directory is fast if it is cached, and gives a
-  # quite reliable way to detect when new pictures appear. But it is not free,
-  # especially on slow hard drives. Set detect_changes to True to get update
-  # whenever the file count changes.
+  # quite reliable way to detect when new pictures appear or disappear. But it
+  # is not free, especially on slow hard drives. Set detect_changes to True to
+  # get updates whenever the file count changes.
   detect_changes = True
   if detect_changes:
-    picture_list = GetPictures(directories)
+    picture_list = GetPicturePaths(directories)
 
-  # Recreate the database if it doesn't exist, and every now and then.
+  # Recreate the database if it doesn't exist or if the file count has changed.
   if not old_database or (detect_changes and len(picture_list) != len(old_database)):
     if verbose:
       print('Updating database from %d to %d pictures.' % (len(old_database), len(picture_list)))
 
     if not detect_changes:
-      picture_list = GetPictures(directories)
+      picture_list = GetPicturePaths(directories)
     # Set a larger decompression bomb level. Could set this to None to disable
     # compression bomb warnings entirely.
     Image.MAX_IMAGE_PIXELS = 300000000
@@ -133,7 +139,7 @@ def main():
       for key, value in new_database.items():
         output_list.append('%s\t%f\t%d' % (key, value[0], value[1]))
       output_string = '\n'.join(output_list)
-      with open(database, 'wb') as f:
+      with open(database_path, 'wb') as f:
         f.write(output_string.encode('utf-16'))
   else:
     new_database = old_database
@@ -141,7 +147,10 @@ def main():
   del old_database
 
   # Filter to just the 5-star photos.
-  filtered = [key for key in new_database.keys() if new_database[key][1] == 5]
+  if args.showall:
+    filtered = list(new_database.keys())
+  else:
+    filtered = [key for key in new_database.keys() if new_database[key][1] == 5]
   if verbose:
     print('Filtered from %d to %d pictures.' % (len(new_database), len(filtered)))
 
@@ -165,17 +174,19 @@ def main():
   history = os.path.join(database_dir, 'WallpaperPhotoHistory.txt')
   with open(history, 'a') as f:
     f.write('%s\t%f\t%d\n' % (path, new_database[path][0], new_database[path][1]))
-  elapsed = time.time() - start
-  if verbose:
-    print('%f s to do work.' % elapsed)
 
 
 if __name__ == '__main__':
+  verbose = True
+  start = time.time()
   try:
-    sys.exit(main())
+    main()
   except Exception as e:
     with open(os.path.join(database_dir, 'WallpaperError.txt'), 'a') as f:
       date_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
       message = 'Exception caught at %s: %s\n' % (date_time, e)
       f.write(message)
       print(message)
+  elapsed = time.time() - start
+  if verbose:
+    print('%f s to do work.' % elapsed)
