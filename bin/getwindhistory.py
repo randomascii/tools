@@ -16,6 +16,15 @@ lines = content.split('\n')
 # Trim the usual blank line from the bottom.
 if not len(lines[-1]):
   lines = lines[:-1]
+
+speeds = []
+max_speed = 1.0
+for line in lines[3:]:
+  speed = float(line[50:55])
+  if speed > max_speed:
+    max_speed = speed
+  speeds.append(speed)
+
 # Put the headers at the bottom also.
 lines = lines + [lines[2]] + lines[:2]
 
@@ -24,3 +33,20 @@ for line in lines:
   # First 16 columns gives us date/time.
   # Columns 50:61 gives us wind speed and direction.
   print('%s%s' % (line[:16], line[50:61]))
+
+# Now print an ASCII art graph of wind speeds:
+v_scale = 1
+print()
+
+num_rows = int(max_speed * v_scale + 0.5) + 1
+rows = []
+for row_num in range(num_rows):
+  rows.append([' '] * len(speeds))
+
+for index, speed in enumerate(speeds):
+  y = int(speed * v_scale + 0.5)
+  rows[y][index] = 'x'
+
+for index, row in enumerate(reversed(rows)):
+  print('%2d: %s' % (len(rows) - index - 1, ''.join(row)))
+print('-' * (len(rows[0]) + 4))
