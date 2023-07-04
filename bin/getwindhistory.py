@@ -41,12 +41,26 @@ print()
 num_rows = int(max_speed * v_scale + 0.5) + 1
 rows = []
 for row_num in range(num_rows):
-  rows.append([' '] * len(speeds))
+  # Create an empty row with '|' as every fourth column.
+  empty_row = [' ', ' ', ' ', '|'] * (int((len(speeds) + 3) / 4))
+  # Make the row exactly the right size.
+  rows.append(empty_row[:len(speeds)])
 
 for index, speed in enumerate(speeds):
   y = int(speed * v_scale + 0.5)
-  rows[y][index] = 'x'
+  rows[y][index] = '*'
 
 for index, row in enumerate(reversed(rows)):
-  print('%2d: %s' % (len(rows) - index - 1, ''.join(row)))
-print('-' * (len(rows[0]) + 4))
+  speed = len(rows) - index - 1
+  print('%2d %s %2d' % (speed, ''.join(row), speed))
+print('-' * (len(rows[0]) + 6))
+
+for hour_digit in range(2):
+  print('   ', end='')
+  for line in lines[3:]:
+    if line[12:14] == '00':
+      hour = line[9:11]
+      print('%s' % hour[1 - hour_digit], end='')
+    else:
+      print(' ', end='')
+  print()
